@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>__PAGE_TITLE__</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #f4f7fb;
+      color: #172033;
+    }
+
+    main {
+      width: min(760px, calc(100vw - 48px));
+      padding: 40px;
+      border: 1px solid #d8e0ea;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 16px 40px rgba(23, 32, 51, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 5vw, 48px);
+      letter-spacing: 0;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+      margin: 0 0 20px;
+    }
+
+    dl {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 8px 16px;
+      margin: 0;
+      color: #4f5f75;
+    }
+
+    dt {
+      font-weight: 700;
+      color: #172033;
+    }
+
+    dd {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>__PAGE_TITLE__</h1>
+    <p>__PAGE_MESSAGE__</p>
+    <dl>
+      <dt>Git SHA</dt><dd>__GIT_SHA__</dd>
+      <dt>Run</dt><dd>__GITHUB_RUN_NUMBER__</dd>
+      <dt>Built at</dt><dd>__BUILD_TIME__</dd>
+    </dl>
+  </main>
+</body>
+</html>
