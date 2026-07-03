@@ -3,7 +3,7 @@ FROM python:3.13-alpine AS page-builder
 WORKDIR /app
 
 ARG PAGE_TITLE="Nginx Demo"
-ARG PAGE_MESSAGE="Deployed by GitHub Actions, ECR, Argo CD, and EKS."
+ARG PAGE_MESSAGE="Deployed by GitHub Actions, ECR, and EKS."
 ARG GIT_SHA="local"
 ARG GITHUB_RUN_NUMBER="local"
 ARG BUILD_TIME="local"

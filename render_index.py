@@ -11,7 +11,7 @@ replacements = {
     "__PAGE_TITLE__": build_value("PAGE_TITLE", "Nginx Demo"),
     "__PAGE_MESSAGE__": build_value(
         "PAGE_MESSAGE",
-        "Deployed by GitHub Actions, ECR, Argo CD, and EKS.",
+        "Deployed by GitHub Actions, ECR, and EKS.",
     ),
     "__GIT_SHA__": build_value("GIT_SHA", "local"),
     "__GITHUB_RUN_NUMBER__": build_value("GITHUB_RUN_NUMBER", "local"),
