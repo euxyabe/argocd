@@ -47,7 +47,8 @@ env:
   # ECR 仓库名，最终镜像会推送到 <account>.dkr.ecr.<region>.amazonaws.com/prod-ecr。
   ECR_REPOSITORY: prod-ecr
   # Docker 构建上下文目录。当前仓库根目录就是 nginx demo。
-  DOCKER_CONTEXT: .
+  # 不要命名为 DOCKER_CONTEXT；这是 Docker CLI 的保留环境变量。
+  DOCKER_BUILD_CONTEXT: .
 
 jobs:
   build-and-push:
@@ -99,7 +100,7 @@ jobs:
             --build-arg "GITHUB_RUN_NUMBER=${GITHUB_RUN_NUMBER}" \
             --build-arg "BUILD_TIME=${BUILD_TIME}" \
             -t "${IMAGE_URI}" \
-            "${DOCKER_CONTEXT}"
+            "${DOCKER_BUILD_CONTEXT}"
 
           docker push "${IMAGE_URI}"
 
