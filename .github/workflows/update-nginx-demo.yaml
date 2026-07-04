@@ -29,10 +29,10 @@ on:
       - render_index.py
 
 # 权限说明：
-# contents: read 用于 actions/checkout 拉取仓库代码。
+# contents: write 用于 actions/checkout 拉取代码，并在镜像推送后写回部署清单。
 # id-token: write 用于通过 GitHub OIDC 获取 AWS 临时身份。
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 # 同一个分支同时只跑一个构建流程，避免重复推送镜像。
@@ -76,6 +76,7 @@ jobs:
       # 构建 nginx demo 镜像并推送到 ECR。
       # 镜像 tag 使用 workflow 运行编号 + Git SHA，便于追踪每次发布来源。
       - name: Build and push nginx demo image
+        id: build
         shell: bash
         env:
           ECR_REGISTRY: ${{ steps.ecr.outputs.registry }}
@@ -92,6 +93,12 @@ jobs:
           IMAGE_URI="${IMAGE_NAME}:${IMAGE_TAG}"
           BUILD_TIME="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
 
+          {
+            echo "image_name=${IMAGE_NAME}"
+            echo "image_tag=${IMAGE_TAG}"
+            echo "image_uri=${IMAGE_URI}"
+          } >> "${GITHUB_OUTPUT}"
+
           # 把页面文案、Git SHA、运行编号和构建时间写入镜像，方便页面展示发布信息。
           docker build --pull \
             --build-arg "PAGE_TITLE=${PAGE_TITLE}" \
@@ -107,6 +114,56 @@ jobs:
           # 在 Actions Summary 中输出镜像地址，便于复制和排查。
           {
             echo "### Published image"
+            echo
+            echo "\`${IMAGE_URI}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      # GitOps 写回：更新 Kustomize 镜像 tag，Argo CD 会自动同步到 EKS。
+      - name: Update deployment manifest
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          IMAGE_NAME: ${{ steps.build.outputs.image_name }}
+          IMAGE_TAG: ${{ steps.build.outputs.image_tag }}
+          IMAGE_URI: ${{ steps.build.outputs.image_uri }}
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          path = Path("cicd/kustomization.yaml")
+          image_name = os.environ["IMAGE_NAME"]
+          image_tag = os.environ["IMAGE_TAG"]
+          text = path.read_text()
+
+          text, name_count = re.subn(r"(?m)^  - name: .+/prod-ecr$", f"  - name: {image_name}", text, count=1)
+          text, new_name_count = re.subn(r"(?m)^    newName: .+/prod-ecr$", f"    newName: {image_name}", text, count=1)
+          text, tag_count = re.subn(r"(?m)^    newTag: .+$", f"    newTag: {image_tag}", text, count=1)
+
+          if (name_count, new_name_count, tag_count) != (1, 1, 1):
+              raise SystemExit("failed to update cicd/kustomization.yaml image fields")
+
+          path.write_text(text)
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet -- cicd/kustomization.yaml; then
+            echo "Deployment manifest already points to ${IMAGE_URI}."
+            exit 0
+          fi
+
+          git add cicd/kustomization.yaml
+          git commit -m "deploy nginx demo ${IMAGE_TAG} [skip ci]"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+          {
+            echo
+            echo "### Deployment manifest updated"
             echo
             echo "\`${IMAGE_URI}\`"
           } >> "${GITHUB_STEP_SUMMARY}"

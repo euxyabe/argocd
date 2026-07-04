@@ -8,6 +8,6 @@ resources:
   - nginx-demo-ingress.yaml
   - nginx-demo-pdb.yaml
 images:
-  - name: 123456789012.dkr.ecr.us-east-1.amazonaws.com/prod-ecr
-    newName: 123456789012.dkr.ecr.us-east-1.amazonaws.com/prod-ecr
-    newTag: bootstrap
+  - name: 338375260705.dkr.ecr.us-east-1.amazonaws.com/prod-ecr
+    newName: 338375260705.dkr.ecr.us-east-1.amazonaws.com/prod-ecr
+    newTag: nginx-demo-8-619efc362dd3
