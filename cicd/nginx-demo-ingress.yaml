@@ -6,13 +6,8 @@ metadata:
   labels:
     app.kubernetes.io/name: nginx-demo
     app.kubernetes.io/part-of: sre-cicd-demo
-  annotations:
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
-    alb.ingress.kubernetes.io/healthcheck-path: /healthz
 spec:
-  ingressClassName: alb
+  ingressClassName: higress
   rules:
     - http:
         paths:
