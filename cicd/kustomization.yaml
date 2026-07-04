@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: nginx-demo
+resources:
+  - nginx-demo-namespace.yaml
+  - nginx-demo-deployment.yaml
+  - nginx-demo-service.yaml
+  - nginx-demo-ingress.yaml
+  - nginx-demo-pdb.yaml
+images:
+  - name: 123456789012.dkr.ecr.us-east-1.amazonaws.com/prod-ecr
+    newName: 123456789012.dkr.ecr.us-east-1.amazonaws.com/prod-ecr
+    newTag: bootstrap

@@ -1,0 +1,58 @@
+# Argo CD Application 资源的 API 版本。
+# argoproj.io/v1alpha1 是 Argo CD 自定义资源定义（CRD）提供的版本。
+apiVersion: argoproj.io/v1alpha1
+
+# kind 表示资源类型；Application 用来声明一个由 Argo CD 持续同步的应用。
+kind: Application
+
+metadata:
+  # Application 在 Argo CD 中显示的应用名称。
+  name: nginx-demo
+
+  # Application 资源本身所在的命名空间，通常是安装 Argo CD 的命名空间。
+  namespace: argocd
+
+  # finalizer 用于删除 Application 时，让 Argo CD 先清理它管理的 Kubernetes 资源。
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  # 使用 Argo CD 的哪个 Project；default 是默认项目。
+  project: default
+
+  # source 描述应用清单从哪里来。
+  source:
+    # Git 仓库地址，Argo CD 会从这里拉取 Kubernetes YAML。
+    repoURL: https://github.com/ojbkxiongdei/awssre-demo.git
+
+    # Git 分支、标签或 commit；这里跟踪 main 分支。
+    targetRevision: main
+
+    # 仓库内清单所在目录；Argo CD 会应用这个目录下的资源。
+    path: cicd
+
+  # destination 描述这些清单要部署到哪个 Kubernetes 集群和命名空间。
+  destination:
+    # https://kubernetes.default.svc 表示 Argo CD 所在的当前集群。
+    server: https://kubernetes.default.svc
+
+    # 目标业务命名空间；nginx-demo 相关资源会部署到这里。
+    namespace: nginx-demo
+
+  # syncPolicy 定义 Argo CD 如何把 Git 中的期望状态同步到集群。
+  syncPolicy:
+    # automated 表示开启自动同步，不需要每次手动点击 Sync。
+    automated:
+      # prune=true 表示 Git 中删除的资源，集群里也会被 Argo CD 删除。
+      prune: true
+
+      # selfHeal=true 表示集群资源被手动改偏后，Argo CD 会自动改回 Git 中的状态。
+      selfHeal: true
+
+    # syncOptions 是同步过程中的附加行为开关。
+    syncOptions:
+      # 如果目标命名空间 nginx-demo 不存在，自动创建它。
+      - CreateNamespace=true
+
+      # 删除多余资源时放到同步最后执行，减少依赖顺序导致的问题。
+      - PruneLast=true
