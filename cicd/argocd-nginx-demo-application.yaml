@@ -23,7 +23,7 @@ spec:
   # source 描述应用清单从哪里来。
   source:
     # Git 仓库地址，Argo CD 会从这里拉取 Kubernetes YAML。
-    repoURL: https://github.com/ojbkxiongdei/awssre-demo.git
+    repoURL: git@github.com:ojbkxiongdei/awssre-demo.git
 
     # Git 分支、标签或 commit；这里跟踪 main 分支。
     targetRevision: main
