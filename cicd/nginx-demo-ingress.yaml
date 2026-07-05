@@ -11,10 +11,10 @@ spec:
   ingressClassName: higress
   tls:
     - hosts:
-        - nginx.awssre.com
-      secretName: nginx-awssre-com-tls
+        - nginx.euxyabe.com
+      secretName: nginx-euxyabe-com-tls
   rules:
-    - host: nginx.awssre.com
+    - host: nginx.euxyabe.com
       http:
         paths:
           - path: /
