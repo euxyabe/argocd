@@ -10,4 +10,4 @@ resources:
 images:
   - name: 338375260705.dkr.ecr.us-east-1.amazonaws.com/prod-ecr
     newName: 338375260705.dkr.ecr.us-east-1.amazonaws.com/prod-ecr
-    newTag: nginx-demo-11-01c52e5777b0
+    newTag: nginx-demo-12-9dd4fb202e60
